@@ -458,13 +458,12 @@ background:#2ecc71;
 </div>
         <div id="map"></div>
         <div id="painel-filtros">
-
     <h3>Filtros</h3>
 
-    <label>Área mínima (m²)</label>
+    <label>Área (m²) - Min</label>
     <input type="number" id="filtro-area-min" placeholder="Ex: 100">
 
-    <label>Área máxima (m²)</label>
+    <label>Área (m²) - Max</label>
     <input type="number" id="filtro-area-max" placeholder="Ex: 1000">
 
     <label>Regional</label>
@@ -474,7 +473,6 @@ background:#2ecc71;
 
     <button onclick="aplicarFiltros()">Aplicar</button>
     <button onclick="limparFiltros()">Limpar</button>
-
 </div>
         <div id="relatorio-print"></div>
 
@@ -831,6 +829,29 @@ var layer_imoveis = new L.geoJson(
     }
 );
 
+var regionais = [];
+
+dadosOriginais.features.forEach(function(f){
+
+    var r = f.properties.regiona;
+
+    if(r && !regionais.includes(r)){
+        regionais.push(r);
+    }
+
+});
+
+var selectRegional = document.getElementById('filtro-regional');
+
+regionais.sort().forEach(function(r){
+
+    var opt = document.createElement('option');
+    opt.value = r;
+    opt.innerText = r;
+    selectRegional.appendChild(opt);
+
+});
+
 map.addLayer(layer_imoveis);
 
 bounds_group.addLayer(layer_imoveis);
@@ -913,9 +934,8 @@ function aplicarFiltros(){
     ) || Infinity;
 
     var regional = document
-        .getElementById('filtro-regional')
-        .value
-        .toUpperCase();
+    .getElementById('filtro-regional')
+    .value;
 
     layer_imoveis.clearLayers();
 
@@ -928,9 +948,11 @@ function aplicarFiltros(){
             var p = f.properties;
 
             var area = parseFloat(
-                p['area terre']
-            ) || 0;
-
+    p['area terre'] ||
+    p['area_terre'] ||
+    p['area terre '] ||
+    p.AREA
+) || 0;
             var reg = (
                 p.regiona || ''
             ).toUpperCase();
@@ -939,7 +961,7 @@ function aplicarFiltros(){
                 area >= areaMin &&
                 area <= areaMax;
 
-            var okRegional = true;
+            okRegional = reg === regional;
 
             if(regional){
 
