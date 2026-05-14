@@ -623,15 +623,20 @@ function buildImovelPopup(p){
 
     return `
 
-    <div class="lote-popup">
+    <div class="popup-header">
 
-        <div class="popup-header">
+    <div style="
+        font-size:18px;
+        font-weight:700;
+        line-height:1.3;
+        color:#ffffff;
+        text-align:center;
+        letter-spacing:0.3px;
+    ">
+        Bairro: ${val(p.bairro)}
+    </div>
 
-            <h3>
-                ${val(p.bairro)}
-            </h3>
-
-        </div>
+</div>
 
         <div class="popup-row">
             <span class="popup-label">Lote</span>
