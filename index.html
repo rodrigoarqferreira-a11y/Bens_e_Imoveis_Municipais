@@ -831,24 +831,20 @@ var layer_imoveis = new L.geoJson(
 var regionais = [];
 
 dadosOriginais.features.forEach(function(f){
-
-    var r = f.properties.regiona;
+    var r = (f.properties.regional || '').trim();
 
     if(r && !regionais.includes(r)){
         regionais.push(r);
     }
-
 });
 
 var selectRegional = document.getElementById('filtro-regional');
 
 regionais.sort().forEach(function(r){
-
     var opt = document.createElement('option');
     opt.value = r;
     opt.innerText = r;
     selectRegional.appendChild(opt);
-
 });
 
 map.addLayer(layer_imoveis);
@@ -954,7 +950,7 @@ function aplicarFiltros(){
     p['area terre '] ||
     p.AREA
 ) || 0;
-            var reg = (p.regiona || '').toUpperCase();
+            var reg = (p.regional || '').toUpperCase();
 
             var okArea =
                 area >= areaMin &&
