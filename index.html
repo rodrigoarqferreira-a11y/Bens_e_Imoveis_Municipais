@@ -912,13 +912,16 @@ var timeoutFiltro;
 
 function aplicarFiltros(){
 
-    var situacao = document
-        .getElementById('filtro-situacao')
-        .value
-        .toUpperCase();
+    var areaMin = parseFloat(
+        document.getElementById('filtro-area-min').value
+    ) || 0;
 
-    var proprietario = document
-        .getElementById('filtro-proprietario')
+    var areaMax = parseFloat(
+        document.getElementById('filtro-area-max').value
+    ) || Infinity;
+
+    var regional = document
+        .getElementById('filtro-regional')
         .value
         .toUpperCase();
 
@@ -932,32 +935,29 @@ function aplicarFiltros(){
 
             var p = f.properties;
 
-            var okSituacao = true;
-            var okProprietario = true;
+            var area = parseFloat(
+                p['area terre']
+            ) || 0;
 
-            if(situacao){
+            var reg = (
+                p.regiona || ''
+            ).toUpperCase();
 
-                okSituacao = (
-                    p.SITUACAO || ''
-                )
-                .toUpperCase()
-                .includes(situacao);
+            var okArea =
+                area >= areaMin &&
+                area <= areaMax;
 
-            }
+            var okRegional = true;
 
-            if(proprietario){
+            if(regional){
 
-                okProprietario = (
-                    p.PROPRIETAR || ''
-                )
-                .toUpperCase()
-                .includes(proprietario);
+                okRegional = reg === regional;
 
             }
 
             return (
-                okSituacao &&
-                okProprietario
+                okArea &&
+                okRegional
             );
 
         })
@@ -970,130 +970,37 @@ function aplicarFiltros(){
 
 function limparFiltros(){
 
-    document.getElementById(
-        'filtro-situacao'
-    ).value = '';
-
-    document.getElementById(
-        'filtro-proprietario'
-    ).value = '';
+    document.getElementById('filtro-area-min').value = '';
+    document.getElementById('filtro-area-max').value = '';
+    document.getElementById('filtro-regional').value = '';
 
     aplicarFiltros();
 
 }
 
-// =====================================
-// AUTOCOMPLETE
-// =====================================
-
-var inputProp =
-    document.getElementById(
-        'filtro-proprietario'
-    );
-
-var listaProp =
-    document.getElementById(
-        'lista-proprietarios'
-    );
-
-var proprietarios = [];
-
-dadosOriginais.features.forEach(function(f){
-
-    var nome = f.properties.PROPRIETAR;
-
-    if(
-        nome &&
-        !proprietarios.includes(nome)
-    ){
-        proprietarios.push(nome);
-    }
-
-});
-
-inputProp.addEventListener(
-    'input',
-    function(){
-
-        var valor =
-            this.value.toUpperCase();
-
-        listaProp.innerHTML = '';
-
-        if(!valor){
-
-            listaProp.style.display = 'none';
-
-            return;
-
-        }
-
-        var encontrados =
-            proprietarios.filter(function(nome){
-
-                return nome
-                    .toUpperCase()
-                    .includes(valor);
-
-            });
-
-        encontrados
-        .slice(0,10)
-        .forEach(function(nome){
-
-            var item =
-                document.createElement('div');
-
-            item.className =
-                'autocomplete-item';
-
-            item.innerText = nome;
-
-            item.onclick = function(){
-
-                inputProp.value = nome;
-
-                listaProp.style.display = 'none';
-
-                aplicarFiltros();
-
-            };
-
-            listaProp.appendChild(item);
-
-        });
-
-        listaProp.style.display = 'block';
-
-    }
-);
 
 // =====================================
 // EVENTOS FILTROS
 // =====================================
 
-inputProp.addEventListener(
-    'keyup',
-    function(){
-
-        clearTimeout(timeoutFiltro);
-
-        timeoutFiltro = setTimeout(
-            function(){
-
-                aplicarFiltros();
-
-            },
-            300
-        );
-
-    }
+document
+.getElementById('filtro-regional')
+.addEventListener(
+    'change',
+    aplicarFiltros
 );
 
 document
-.getElementById('filtro-situacao')
+.getElementById('filtro-area-min')
 .addEventListener(
-    'change',
+    'keyup',
+    aplicarFiltros
+);
+
+document
+.getElementById('filtro-area-max')
+.addEventListener(
+    'keyup',
     aplicarFiltros
 );
 
