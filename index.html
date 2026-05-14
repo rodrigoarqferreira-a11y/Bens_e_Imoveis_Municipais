@@ -458,31 +458,23 @@ background:#2ecc71;
 </div>
         <div id="map"></div>
         <div id="painel-filtros">
+
     <h3>Filtros</h3>
 
-    <label>Situação:</label>
-    <select id="filtro-situacao">
-        <option value="">Todos</option>
-        <option value="ATIVO">Ativo</option>
-        <option value="OCIOSO">Ocioso</option>
-    </select>
+    <label>Área mínima (m²)</label>
+    <input type="number" id="filtro-area-min" placeholder="Ex: 100">
 
-    <label>Distrito:</label>
-    <select id="filtro-distrito">
-        <option value="">Todos</option>
-    </select>
+    <label>Área máxima (m²)</label>
+    <input type="number" id="filtro-area-max" placeholder="Ex: 1000">
 
-<label>Proprietário:</label>
-<input type="text" id="filtro-proprietario" placeholder="Digite o nome...">
-<div id="lista-proprietarios" class="autocomplete-list"></div>
-
-    <label>Tipo de Imóvel:</label>
-    <select id="filtro-tipo">
-        <option value="">Todos</option>
+    <label>Regional</label>
+    <select id="filtro-regional">
+        <option value="">Todas</option>
     </select>
 
     <button onclick="aplicarFiltros()">Aplicar</button>
     <button onclick="limparFiltros()">Limpar</button>
+
 </div>
         <div id="relatorio-print"></div>
 
