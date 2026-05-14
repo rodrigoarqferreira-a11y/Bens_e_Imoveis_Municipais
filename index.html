@@ -470,6 +470,9 @@ background:#2ecc71;
     <select id="filtro-regional" multiple size="5">
     </select>
 
+    <label>Classe / Subclasse</label>
+    <select id="filtro-subclasse" multiple size="5"></select>
+
     <button onclick="aplicarFiltros()">Aplicar</button>
     <button onclick="limparFiltros()">Limpar</button>
 </div>
@@ -846,6 +849,31 @@ regionais.sort().forEach(function(r){
     opt.innerText = r;
     selectRegional.appendChild(opt);
 });
+var classes = [];
+
+dadosOriginais.features.forEach(function(f){
+
+    var c = (
+        f.properties.ubclasse ||
+        f.properties.classe ||
+        f.properties.Classe ||
+        f.properties.subclasse ||
+        ''
+    ).trim();
+
+    if(c && !classes.includes(c)){
+        classes.push(c);
+    }
+});
+
+var selectClasse = document.getElementById('filtro-classe');
+
+classes.sort().forEach(function(c){
+    var opt = document.createElement('option');
+    opt.value = c;
+    opt.innerText = c;
+    selectClasse.appendChild(opt);
+});
 
 map.addLayer(layer_imoveis);
 
@@ -934,6 +962,11 @@ function aplicarFiltros(){
     .map(o => o.value.toUpperCase())
     .filter(v => v !== '');
 
+    var classeSelect = document.getElementById('filtro-classe');
+
+    var classesSelecionadas = Array.from(classeSelect.selectedOptions)
+    .map(o => o.value.toUpperCase());
+
     layer_imoveis.clearLayers();
 
     var filtrados = {
@@ -962,7 +995,21 @@ function aplicarFiltros(){
                 okRegional = regionaisSelecionadas.includes(reg);
             }
 
-            return okArea && okRegional;
+            var classe = (
+    p.ubclasse ||
+    p.classe ||
+    p.Classe ||
+    p.subclasse ||
+    ''
+).toUpperCase();
+
+var okClasse = true;
+
+if (classesSelecionadas.length > 0) {
+    okClasse = classesSelecionadas.includes(classe);
+}
+
+            return okArea && okRegional && okClasse;
 
          })
 
