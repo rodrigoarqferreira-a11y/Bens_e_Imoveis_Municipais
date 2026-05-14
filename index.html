@@ -488,7 +488,6 @@ background:#2ecc71;
         <script src="js/labelgun.min.js"></script>
         <script src="js/labels.js"></script>
         <script src="js/leaflet.photon.js"></script>
-        <script src="data/BenseImoveisSEAD2023_2.geojson"></script>
         <script src="data/RegioMetropolitana_1.js"></script>
         <script src="data/LimiteMunicipaldeContagemConformeaLeiComplementar362de28deSetembrode2023_3.js"></script>
 
@@ -754,130 +753,158 @@ map.addLayer(layer_limite_contagem);
 bounds_group.addLayer(layer_limite_contagem);
 
 // ======================================
-// CAMADA BENS E IMÓVEIS
+// CAMADA BENS E IMÓVEIS (GEOJSON)
 // ======================================
 
-var dadosOriginais = json_BenseImoveisSEAD2023_2;
+var dadosOriginais;
+var layer_imoveis;
 
-var layer_imoveis = new L.geoJson(
-    dadosOriginais,
-    {
+fetch('data/BenseImoveisSEAD2023_2.geojson')
 
-        pane: 'pane_BenseImoveisSEAD2023_2',
+.then(response => response.json())
 
-        style: function(feature){
+.then(function(data){
 
-            return {
-                color: '#ffffff',
-                weight: 1,
-                fillColor: '#1976d2',
-                fillOpacity: 0.65
-            };
+    dadosOriginais = data;
 
-        },
+    layer_imoveis = new L.geoJson(
+        dadosOriginais,
+        {
 
-        onEachFeature: function(feature, layer){
+            pane: 'pane_BenseImoveisSEAD2023_2',
 
-            layer.on({
+            style: function(feature){
 
-                mouseover: function(e){
+                return {
+                    color: '#ffffff',
+                    weight: 1,
+                    fillColor: '#1976d2',
+                    fillOpacity: 0.65
+                };
 
-    e.target.setStyle({
+            },
 
-        color: '#fff176',
-        fillColor: '#ffeb3b',
+            onEachFeature: function(feature, layer){
 
-        weight: 3,
+                layer.on({
 
-        fillOpacity: 0.95
+                    mouseover: function(e){
+
+                        e.target.setStyle({
+
+                            color: '#fff176',
+                            fillColor: '#ffeb3b',
+                            weight: 3,
+                            fillOpacity: 0.95
+
+                        });
+
+                        e.target.bringToFront();
+
+                    },
+
+                    mouseout: function(e){
+
+                        layer_imoveis.resetStyle(e.target);
+
+                    },
+
+                    click: function(e){
+
+                        map.fitBounds(
+                            e.target.getBounds(),
+                            {
+                                padding:[40,40]
+                            }
+                        );
+
+                    }
+
+                });
+
+                layer.bindPopup(
+                    buildImovelPopup(
+                        feature.properties
+                    ),
+                    {
+                        maxWidth: 320
+                    }
+                );
+
+            }
+
+        }
+    );
+
+    map.addLayer(layer_imoveis);
+
+    bounds_group.addLayer(layer_imoveis);
+
+    // ======================================
+    // POPULAR FILTRO REGIONAL
+    // ======================================
+
+    var regionais = [];
+
+    dadosOriginais.features.forEach(function(f){
+
+        var r = (f.properties.regional || '').trim();
+
+        if(r && !regionais.includes(r)){
+            regionais.push(r);
+        }
 
     });
 
-    e.target.bringToFront();
+    var selectRegional = document.getElementById('filtro-regional');
 
-},
+    regionais.sort().forEach(function(r){
 
-                mouseout: function(e){
+        var opt = document.createElement('option');
 
-                    layer_imoveis.resetStyle(e.target);
+        opt.value = r;
+        opt.innerText = r;
 
-                },
+        selectRegional.appendChild(opt);
 
-                click: function(e){
+    });
 
-                    map.fitBounds(
-                        e.target.getBounds(),
-                        {
-                            padding:[40,40]
-                        }
-                    );
+    // ======================================
+    // POPULAR FILTRO CLASSE
+    // ======================================
 
-                }
+    var classes = [];
 
-            });
+    dadosOriginais.features.forEach(function(f){
 
-            layer.bindPopup(
-                buildImovelPopup(
-                    feature.properties,
-                    layer
-                ),
-                {
-                    maxWidth: 320
-                }
-            );
+        var c = (
+            f.properties.ubclasse ||
+            f.properties.classe ||
+            f.properties.Classe ||
+            f.properties.subclasse ||
+            ''
+        ).trim();
 
+        if(c && !classes.includes(c)){
+            classes.push(c);
         }
 
-    }
-);
+    });
 
-var regionais = [];
+    var selectClasse = document.getElementById('filtro-subclasse');
 
-dadosOriginais.features.forEach(function(f){
-    var r = (f.properties.regional || '').trim();
+    classes.sort().forEach(function(c){
 
-    if(r && !regionais.includes(r)){
-        regionais.push(r);
-    }
+        var opt = document.createElement('option');
+
+        opt.value = c;
+        opt.innerText = c;
+
+        selectClasse.appendChild(opt);
+
+    });
+
 });
-
-var selectRegional = document.getElementById('filtro-regional');
-
-regionais.sort().forEach(function(r){
-    var opt = document.createElement('option');
-    opt.value = r;
-    opt.innerText = r;
-    selectRegional.appendChild(opt);
-});
-var classes = [];
-
-dadosOriginais.features.forEach(function(f){
-
-    var c = (
-        f.properties.ubclasse ||
-        f.properties.classe ||
-        f.properties.Classe ||
-        f.properties.subclasse ||
-        ''
-    ).trim();
-
-    if(c && !classes.includes(c)){
-        classes.push(c);
-    }
-});
-
-var selectClasse = document.getElementById('filtro-subclasse');
-
-classes.sort().forEach(function(c){
-    var opt = document.createElement('option');
-    opt.value = c;
-    opt.innerText = c;
-    selectClasse.appendChild(opt);
-});
-
-map.addLayer(layer_imoveis);
-
-bounds_group.addLayer(layer_imoveis);
 
 // =====================================
 // AJUSTAR ENQUADRAMENTO
