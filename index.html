@@ -866,7 +866,7 @@ dadosOriginais.features.forEach(function(f){
     }
 });
 
-var selectClasse = document.getElementById('filtro-classe');
+var selectClasse = document.getElementById('filtro-subclasse');
 
 classes.sort().forEach(function(c){
     var opt = document.createElement('option');
@@ -962,7 +962,7 @@ function aplicarFiltros(){
     .map(o => o.value.toUpperCase())
     .filter(v => v !== '');
 
-    var classeSelect = document.getElementById('filtro-classe');
+    var classeSelect = document.getElementById('filtro-subclasse');
 
     var classesSelecionadas = Array.from(classeSelect.selectedOptions)
     .map(o => o.value.toUpperCase());
@@ -996,12 +996,12 @@ function aplicarFiltros(){
             }
 
             var classe = (
-    p.ubclasse ||
-    p.classe ||
-    p.Classe ||
-    p.subclasse ||
+    f.properties.ubclasse ||
+    f.properties.classe ||
+    f.properties.Classe ||
+    f.properties.subclasse ||
     ''
-).toUpperCase();
+).trim().toUpperCase();
 
 var okClasse = true;
 
@@ -1023,7 +1023,12 @@ function limparFiltros(){
 
     document.getElementById('filtro-area-min').value = '';
     document.getElementById('filtro-area-max').value = '';
-    document.getElementById('filtro-regional').value = '';
+
+    Array.from(document.getElementById('filtro-regional').options)
+        .forEach(o => o.selected = false);
+
+    Array.from(document.getElementById('filtro-subclasse').options)
+        .forEach(o => o.selected = false);
 
     aplicarFiltros();
 
@@ -1052,6 +1057,13 @@ document
 .getElementById('filtro-area-max')
 .addEventListener(
     'keyup',
+    aplicarFiltros
+);
+
+document
+.getElementById('filtro-subclasse')
+.addEventListener(
+    'change',
     aplicarFiltros
 );
 
