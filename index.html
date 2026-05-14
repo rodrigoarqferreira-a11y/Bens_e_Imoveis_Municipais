@@ -627,39 +627,55 @@ function buildImovelPopup(p){
 
         <div class="popup-header">
 
-            <span class="popup-badge">
-                BEM IMÓVEL MUNICIPAL
-            </span>
-
             <h3>
-                ${val(p.ENDERECO)}
+                ${val(p.bairro)}
             </h3>
 
         </div>
 
         <div class="popup-row">
-            <span class="popup-label">📍 Bairro</span>
-            <span class="popup-value">${val(p.BAIRRO)}</span>
+            <span class="popup-label">Lote</span>
+            <span class="popup-value">${val(p.lote)}</span>
         </div>
 
         <div class="popup-row">
-            <span class="popup-label">📐 Área</span>
-            <span class="popup-value">${formatarArea(p.AREA)}</span>
+            <span class="popup-label">Quadra</span>
+            <span class="popup-value">${val(p.quadra)}</span>
         </div>
 
         <div class="popup-row">
-            <span class="popup-label">🏢 Secretaria</span>
-            <span class="popup-value">${val(p.SECRETARIA)}</span>
+            <span class="popup-label">Área</span>
+            <span class="popup-value">
+                ${formatarArea(p.area terre)}
+            </span>
         </div>
 
         <div class="popup-row">
-            <span class="popup-label">📄 Inscrição</span>
-            <span class="popup-value">${val(p.INSCRICAO)}</span>
+            <span class="popup-label">Localização</span>
+            <span class="popup-value">
+                ${val(p.localizaca)}
+            </span>
         </div>
 
         <div class="popup-row">
-            <span class="popup-label">📌 Situação</span>
-            <span class="popup-value">${val(p.SITUACAO)}</span>
+            <span class="popup-label">Regional</span>
+            <span class="popup-value">
+                ${val(p.regional)}
+            </span>
+        </div>
+
+        <div class="popup-row">
+            <span class="popup-label">Possui Edificação</span>
+            <span class="popup-value">
+                ${val(p.edificada()}
+            </span>
+        </div>
+
+        <div class="popup-row">
+            <span class="popup-label">Zoneamento</span>
+            <span class="popup-value">
+                ${val(p.Zoneamento)}
+            </span>
         </div>
 
     </div>
@@ -769,12 +785,20 @@ var layer_imoveis = new L.geoJson(
 
                 mouseover: function(e){
 
-                    e.target.setStyle({
-                        weight: 2,
-                        fillOpacity: 0.9
-                    });
+    e.target.setStyle({
 
-                },
+        color: '#fff176',
+        fillColor: '#ffeb3b',
+
+        weight: 3,
+
+        fillOpacity: 0.95
+
+    });
+
+    e.target.bringToFront();
+
+},
 
                 mouseout: function(e){
 
