@@ -467,8 +467,7 @@ background:#2ecc71;
     <input type="number" id="filtro-area-max" placeholder="Ex: 1000">
 
     <label>Regional</label>
-    <select id="filtro-regional">
-        <option value="">Todas</option>
+    <select id="filtro-regional" multiple size="5">
     </select>
 
     <button onclick="aplicarFiltros()">Aplicar</button>
@@ -933,9 +932,11 @@ function aplicarFiltros(){
         document.getElementById('filtro-area-max').value
     ) || Infinity;
 
-    var regional = document
-    .getElementById('filtro-regional')
-    .value;
+    var regionalSelect = document.getElementById('filtro-regional');
+
+    var regionaisSelecionadas = Array.from(regionalSelect.selectedOptions)
+    .map(o => o.value.toUpperCase())
+    .filter(v => v !== '');
 
     layer_imoveis.clearLayers();
 
@@ -953,28 +954,21 @@ function aplicarFiltros(){
     p['area terre '] ||
     p.AREA
 ) || 0;
-            var reg = (
-                p.regiona || ''
-            ).toUpperCase();
+            var reg = (p.regiona || '').toUpperCase();
 
             var okArea =
                 area >= areaMin &&
                 area <= areaMax;
 
-            okRegional = reg === regional;
+            var okRegional = true;
 
-            if(regional){
-
-                okRegional = reg === regional;
-
+            if (regionaisSelecionadas.length > 0) {
+                okRegional = regionaisSelecionadas.includes(reg);
             }
 
-            return (
-                okArea &&
-                okRegional
-            );
+            return okArea && okRegional;
 
-        })
+         })
 
     };
 
