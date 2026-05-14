@@ -1017,6 +1017,19 @@ if (classesSelecionadas.length > 0) {
 
     layer_imoveis.addData(filtrados);
 
+/// aproxima dos resultados filtrados
+    if(layer_imoveis.getLayers().length > 0){
+
+        map.fitBounds(
+            layer_imoveis.getBounds(),
+            {
+                padding:[40,40],
+                maxZoom:17
+            }
+        );
+
+    }
+
 }
 
 function limparFiltros(){
