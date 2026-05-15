@@ -473,6 +473,9 @@ background:#2ecc71;
     <label>Classe / Subclasse</label>
     <select id="filtro-subclasse" multiple size="5"></select>
 
+    <label>Zoneamento</label>
+    <select id="filtro-zoneamento" multiple size="5"></select>
+
     <button onclick="aplicarFiltros()">Aplicar</button>
     <button onclick="limparFiltros()">Limpar</button>
 </div>
@@ -924,6 +927,37 @@ style: function(feature){
 
 });
 
+// =========================
+// POPULAR FILTRO ZONEAMENTO
+// =========================
+
+var zoneamentos = [];
+
+dadosOriginais.features.forEach(function(f){
+
+    var z = (
+        f.properties.Zoneamento || ''
+    ).trim();
+
+    if(z && !zoneamentos.includes(z)){
+        zoneamentos.push(z);
+    }
+
+});
+
+var selectZoneamento = document.getElementById('filtro-zoneamento');
+
+zoneamentos.sort().forEach(function(z){
+
+    var opt = document.createElement('option');
+
+    opt.value = z;
+    opt.innerText = z;
+
+    selectZoneamento.appendChild(opt);
+
+});
+
 // =====================================
 // AJUSTAR ENQUADRAMENTO
 // =====================================
@@ -1008,6 +1042,11 @@ function aplicarFiltros(){
     var classesSelecionadas = Array.from(classeSelect.selectedOptions)
     .map(o => o.value.toUpperCase());
 
+    var zoneamentoSelect = document.getElementById('filtro-zoneamento');
+
+    var zoneamentosSelecionados = Array.from(zoneamentoSelect.selectedOptions)
+    .map(o => o.value.toUpperCase());
+
     layer_imoveis.clearLayers();
 
     var filtrados = {
@@ -1050,7 +1089,17 @@ if (classesSelecionadas.length > 0) {
     okClasse = classesSelecionadas.includes(classe);
 }
 
-            return okArea && okRegional && okClasse;
+var zoneamento = (
+    f.properties.Zoneamento || ''
+).trim().toUpperCase();
+
+var okZoneamento = true;
+
+if(zoneamentosSelecionados.length > 0){
+    okZoneamento = zoneamentosSelecionados.includes(zoneamento);
+}
+
+            return okArea && okRegional && okClasse && okZoneamento;
 
          })
 
@@ -1084,6 +1133,9 @@ function limparFiltros(){
     Array.from(document.getElementById('filtro-subclasse').options)
         .forEach(o => o.selected = false);
 
+    Array.from(document.getElementById('filtro-zoneamento').options)
+    .forEach(o => o.selected = false);
+
     aplicarFiltros();
 
 }
@@ -1116,6 +1168,13 @@ document
 
 document
 .getElementById('filtro-subclasse')
+.addEventListener(
+    'change',
+    aplicarFiltros
+);
+
+document
+.getElementById('filtro-zoneamento')
 .addEventListener(
     'change',
     aplicarFiltros
