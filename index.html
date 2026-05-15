@@ -433,6 +433,88 @@ html, body {
     }
 }
 
+#grafico-areas{
+
+    margin-top:14px;
+
+    padding:12px;
+
+    background:#ffffff;
+
+    border-radius:10px;
+
+    border:1px solid #e6edf5;
+
+    box-shadow:
+        0 4px 18px rgba(0,0,0,0.08);
+
+    font-family:'Inter', sans-serif;
+}
+
+.grafico-titulo{
+
+    font-size:13px;
+
+    font-weight:700;
+
+    color:#1a3a5c;
+
+    margin-bottom:12px;
+}
+
+.grafico-linha{
+
+    margin-bottom:10px;
+}
+
+.grafico-label{
+
+    font-size:11px;
+
+    margin-bottom:4px;
+
+    color:#444;
+}
+
+.grafico-barra-bg{
+
+    width:100%;
+
+    height:12px;
+
+    background:#eef3f8;
+
+    border-radius:20px;
+
+    overflow:hidden;
+}
+
+.grafico-barra{
+
+    height:100%;
+
+    border-radius:20px;
+
+    background:linear-gradient(
+        90deg,
+        #1a3a5c,
+        #3d6f9f
+    );
+}
+
+.grafico-valor{
+
+    font-size:11px;
+
+    font-weight:600;
+
+    color:#1a3a5c;
+
+    margin-top:2px;
+
+    text-align:right;
+}
+
         /* ========== POPUP CUSTOMIZADO ========== */
         .lote-popup {
     font-family: 'Segoe UI', Arial, sans-serif;
@@ -686,6 +768,15 @@ background:#2ecc71;
 
     <button onclick="aplicarFiltros()">Aplicar</button>
     <button onclick="limparFiltros()">Limpar</button>
+
+    <div id="grafico-areas">
+
+    <div class="grafico-titulo">
+        Distribuição das Áreas
+    </div>
+
+    <div id="grafico-barras"></div>
+
 </div>
         <div id="relatorio-print"></div>
 
@@ -1192,6 +1283,8 @@ zoneamentos.sort().forEach(function(z){
 
     selectZoneamento.appendChild(opt);
 
+atualizarGraficoAreas(dadosOriginais.features);
+
 });
 
 // ESCONDE LOADING
@@ -1273,6 +1366,96 @@ L.control.scale({
 // =====================================
 
 var timeoutFiltro;
+
+function atualizarGraficoAreas(features){
+
+    var faixas = {
+
+        ate500: 0,
+        ate1000: 0,
+        ate5000: 0,
+        acima5000: 0
+
+    };
+
+    features.forEach(function(f){
+
+        var area = parseFloat(
+            f.properties['area terre']
+        ) || 0;
+
+        if(area <= 500){
+
+            faixas.ate500++;
+
+        } else if(area <= 1000){
+
+            faixas.ate1000++;
+
+        } else if(area <= 5000){
+
+            faixas.ate5000++;
+
+        } else {
+
+            faixas.acima5000++;
+
+        }
+
+    });
+
+    var maior = Math.max(
+        faixas.ate500,
+        faixas.ate1000,
+        faixas.ate5000,
+        faixas.acima5000,
+        1
+    );
+
+    function largura(v){
+
+        return (v / maior) * 100;
+    }
+
+    document.getElementById('grafico-barras').innerHTML = `
+
+        ${criarLinhaGrafico('Até 500 m²', faixas.ate500, largura(faixas.ate500))}
+
+        ${criarLinhaGrafico('500–1000 m²', faixas.ate1000, largura(faixas.ate1000))}
+
+        ${criarLinhaGrafico('1000–5000 m²', faixas.ate5000, largura(faixas.ate5000))}
+
+        ${criarLinhaGrafico('5000+ m²', faixas.acima5000, largura(faixas.acima5000))}
+
+    `;
+}
+
+function criarLinhaGrafico(label, valor, largura){
+
+    return `
+
+        <div class="grafico-linha">
+
+            <div class="grafico-label">
+                ${label}
+            </div>
+
+            <div class="grafico-barra-bg">
+
+                <div class="grafico-barra"
+                    style="width:${largura}%">
+                </div>
+
+            </div>
+
+            <div class="grafico-valor">
+                ${valor} lotes
+            </div>
+
+        </div>
+
+    `;
+}
 
 function aplicarFiltros(){
 
@@ -1369,6 +1552,8 @@ var exibidos = filtrados.features.length;
 
 document.getElementById('contador-filtros').innerHTML =
     'Exibindo ' + exibidos + ' de ' + total + ' lotes';
+
+atualizarGraficoAreas(filtrados.features);
 
 /// aproxima dos resultados filtrados
     if(layer_imoveis.getLayers().length > 0){
