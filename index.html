@@ -982,6 +982,26 @@ style: function(feature){
 
                 });
 
+                layer.bindTooltip(
+
+    '<strong>' + val(feature.properties.bairro) + '</strong><br>' +
+
+    'Área: ' +
+    formatarArea(feature.properties['area terre']) +
+
+    '<br>' +
+
+    'Zoneamento: ' +
+    val(feature.properties.Zoneamento),
+
+    {
+        sticky: true,
+        direction: 'top',
+        opacity: 0.95
+    }
+
+);
+
                 layer.bindPopup(
     buildImovelPopup(
         feature.properties
