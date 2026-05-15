@@ -288,11 +288,91 @@ html, body {
     text-align:center;
 }
 
+#loading-dados{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(255,255,255,0.55);
+
+    backdrop-filter: blur(2px);
+
+    z-index:999998;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+.loading-box{
+
+    background:white;
+
+    padding:20px 28px;
+
+    border-radius:10px;
+
+    box-shadow:0 5px 25px rgba(0,0,0,0.2);
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    font-family:'Inter', sans-serif;
+}
+
+.loading-texto{
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:#1a3a5c;
+}
+
+.loading-spinner{
+
+    width:22px;
+    height:22px;
+
+    border:3px solid #dce6f2;
+
+    border-top:3px solid #1a3a5c;
+
+    border-radius:50%;
+
+    animation:girar 1s linear infinite;
+}
+
+@keyframes girar{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
         /* ========== POPUP CUSTOMIZADO ========== */
         .lote-popup {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            min-width: 270px;
-        }
+    font-family: 'Segoe UI', Arial, sans-serif;
+    min-width: 270px;
+
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
         .popup-header {
             background: #1a3a5c;
             color: white;
@@ -502,6 +582,16 @@ background:#2ecc71;
     </div>
 </div>
         <div id="map"></div>
+
+        <div id="loading-dados">
+    <div class="loading-box">
+        <div class="loading-spinner"></div>
+        <div class="loading-texto">
+            Carregando lotes...
+        </div>
+    </div>
+</div>
+
         <div id="painel-filtros">
     <h3>Filtros</h3>
 
@@ -893,13 +983,14 @@ style: function(feature){
                 });
 
                 layer.bindPopup(
-                    buildImovelPopup(
-                        feature.properties
-                    ),
-                    {
-                        maxWidth: 320
-                    }
-                );
+    buildImovelPopup(
+        feature.properties
+    ),
+    {
+        maxWidth: 320,
+        className: 'lote-popup'
+    }
+);
 
             }
 
@@ -1005,6 +1096,20 @@ zoneamentos.sort().forEach(function(z){
     selectZoneamento.appendChild(opt);
 
 });
+
+// ESCONDE LOADING
+document.getElementById('loading-dados').style.display = 'none';
+
+})
+
+// ERRO NO CARREGAMENTO
+.catch(function(error){
+
+    console.error(error);
+
+    document.querySelector('.loading-texto').innerHTML =
+        'Erro ao carregar dados';
+
 
 });
 
