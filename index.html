@@ -924,10 +924,8 @@ style: function(feature){
         selectClasse.appendChild(opt);
 
     });
-
-});
-
-// =========================
+   
+    // =========================
 // POPULAR FILTRO ZONEAMENTO
 // =========================
 
@@ -957,6 +955,9 @@ zoneamentos.sort().forEach(function(z){
     selectZoneamento.appendChild(opt);
 
 });
+
+});
+
 
 // =====================================
 // AJUSTAR ENQUADRAMENTO
@@ -1090,7 +1091,10 @@ if (classesSelecionadas.length > 0) {
 }
 
 var zoneamento = (
-    f.properties.Zoneamento || ''
+    f.properties.Zoneamento ||
+    f.properties.zoneamento ||
+    f.properties.ZONEAMENTO ||
+    ''
 ).trim().toUpperCase();
 
 var okZoneamento = true;
